@@ -5,9 +5,9 @@ import androidx.navigation.compose.composable
 import com.bullsage.android.ui.navigation.BullSageDestinations
 
 fun NavGraphBuilder.homeScreen() {
-    composable(
-        route = BullSageDestinations.HOME.route
-    ) {
-        HomeRoute()
-    }
+//    composable(
+//        route = BullSageDestinations.HOME.route
+//    ) {
+//        HomeRoute()
+//    }
 }
