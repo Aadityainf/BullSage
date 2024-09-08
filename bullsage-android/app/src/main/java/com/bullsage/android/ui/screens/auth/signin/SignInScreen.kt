@@ -34,15 +34,23 @@ import com.bullsage.android.ui.screens.auth.components.AuthForm
 
 @Composable
 fun SignInRoute(
-
+    onSignUpClick: () -> Unit,
+    onSignInClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
-    SignInScreen()
+    SignInScreen(
+        onSignUpClick = onSignUpClick,
+        onSignInClick = onSignInClick,
+        onBackClick = onBackClick
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SignInScreen(
-
+    onSignUpClick: () -> Unit,
+    onSignInClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -51,7 +59,7 @@ private fun SignInScreen(
         topBar = {
             TopAppBar(
                 title = {},
-                navigationIcon = { BackButton(onClick = {  }) }
+                navigationIcon = { BackButton(onClick = onBackClick) }
             )
         },
         snackbarHost = {
@@ -75,7 +83,7 @@ private fun SignInScreen(
             )
             Spacer(Modifier.height(10.dp))
             NoAccount(
-                onClick = {  }
+                onSignUpClick = onSignUpClick
             )
             Spacer(Modifier.height(40.dp))
             AuthForm(
@@ -88,7 +96,7 @@ private fun SignInScreen(
             )
             Spacer(Modifier.height(20.dp))
             Button(
-                onClick = {},
+                onClick = onSignInClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -102,7 +110,7 @@ private fun SignInScreen(
 
 @Composable
 private fun NoAccount(
-    onClick: () -> Unit
+    onSignUpClick: () -> Unit
 ) {
     Row {
         Text(
@@ -111,7 +119,7 @@ private fun NoAccount(
         Text(
             text = stringResource(id = R.string.sign_up),
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable { onClick() }
+            modifier = Modifier.clickable { onSignUpClick() }
         )
     }
 }
@@ -120,6 +128,10 @@ private fun NoAccount(
 @Composable
 private fun SignInScreenPreview() {
     ComponentPreview {
-        SignInScreen()
+        SignInScreen(
+            onSignUpClick = {},
+            onSignInClick = {},
+            onBackClick = {}
+        )
     }
 }

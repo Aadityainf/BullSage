@@ -17,14 +17,16 @@ import com.bullsage.android.ui.components.previews.DayNightPreviews
 
 @Composable
 fun OnboardingRoute(
-
+    onGetStartedClick: () -> Unit
 ) {
-    OnboardingScreen()
+    OnboardingScreen(
+        onGetStartedClick = onGetStartedClick
+    )
 }
 
 @Composable
 fun OnboardingScreen(
-
+    onGetStartedClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -39,7 +41,7 @@ fun OnboardingScreen(
 
         }
         Button(
-            onClick = {},
+            onClick = onGetStartedClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
@@ -54,6 +56,8 @@ fun OnboardingScreen(
 @Composable
 private fun OnboardingScreenPreview() {
     ComponentPreview {
-        OnboardingScreen()
+        OnboardingScreen(
+            onGetStartedClick = {}
+        )
     }
 }

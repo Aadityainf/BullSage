@@ -5,17 +5,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
 import com.bullsage.android.ui.screens.auth.signin.SignInRoute
 import com.bullsage.android.ui.screens.auth.signup.SignUpRoute
 import com.bullsage.android.ui.screens.explore.exploreScreen
-import com.bullsage.android.ui.screens.home.homeScreen
+import com.bullsage.android.ui.screens.home.HomeRoute
 import com.bullsage.android.ui.screens.onboarding.OnboardingRoute
 import com.bullsage.android.ui.screens.profile.profileScreen
 
 @Composable
 fun BullSageNavigation(
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController,
     hasOnboarded: Boolean
 ) {
     NavHost(
@@ -29,7 +28,9 @@ fun BullSageNavigation(
         composable(
             route = BullSageDestinations.Destination.Onboarding.route
         ) {
-            OnboardingRoute()
+            OnboardingRoute(
+                onGetStartedClick = navController::navigateToAuth
+            )
         }
 
         navigation(
@@ -39,16 +40,28 @@ fun BullSageNavigation(
             composable(
                 route = BullSageDestinations.Destination.Auth.SignIn.route
             ) {
-                SignInRoute()
+                SignInRoute(
+                    onSignUpClick = navController::navigateToSignUp,
+                    onSignInClick = navController::navigateToHomeOnSignIn,
+                    onBackClick = navController::navigateUp
+                )
             }
             composable(
                 route = BullSageDestinations.Destination.Auth.SignUp.route
             ) {
-                SignUpRoute()
+                SignUpRoute(
+                    onContinueClick = {},
+                    onBackClick = navController::navigateUp
+                )
             }
         }
 
-        homeScreen()
+        composable(
+            route = BullSageDestinations.BottomBarDestination.HOME.name
+        ) {
+            HomeRoute()
+        }
+
         exploreScreen()
         profileScreen()
     }

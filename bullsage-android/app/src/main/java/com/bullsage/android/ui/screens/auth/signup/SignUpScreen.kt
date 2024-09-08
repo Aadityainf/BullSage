@@ -32,14 +32,21 @@ import com.bullsage.android.ui.screens.auth.components.AuthForm
 
 @Composable
 fun SignUpRoute(
-
+    onContinueClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
-    SignUpScreen()
+    SignUpScreen(
+        onContinueClick = onContinueClick,
+        onBackClick = onBackClick
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SignUpScreen() {
+private fun SignUpScreen(
+    onContinueClick: () -> Unit,
+    onBackClick: () -> Unit
+) {
     val scrollState = rememberScrollState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -47,7 +54,7 @@ private fun SignUpScreen() {
         topBar = {
             TopAppBar(
                 title = {},
-                navigationIcon = { BackButton(onClick = {  }) }
+                navigationIcon = { BackButton(onClick = onBackClick) }
             )
         },
         snackbarHost = {
@@ -80,7 +87,7 @@ private fun SignUpScreen() {
             )
             Spacer(Modifier.height(20.dp))
             Button(
-                onClick = {},
+                onClick = onContinueClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -96,6 +103,9 @@ private fun SignUpScreen() {
 @Composable
 private fun SignUpScreenPreview() {
     ComponentPreview {
-        SignUpScreen()
+        SignUpScreen(
+            onContinueClick = {},
+            onBackClick = {}
+        )
     }
 }
