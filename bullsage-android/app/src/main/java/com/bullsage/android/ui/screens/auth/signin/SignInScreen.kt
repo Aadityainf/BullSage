@@ -5,12 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -19,28 +15,43 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bullsage.android.R
 import com.bullsage.android.ui.components.BackButton
 import com.bullsage.android.ui.components.previews.ComponentPreview
 import com.bullsage.android.ui.components.previews.DayNightPreviews
 import com.bullsage.android.ui.screens.auth.components.AuthForm
+import kotlinx.coroutines.launch
 
 @Composable
 fun SignInRoute(
     onSignUpClick: () -> Unit,
-    onSignInClick: () -> Unit,
-    onBackClick: () -> Unit
+    onSignInSuccessful: () -> Unit,
+    onBackClick: () -> Unit,
+    viewModel: SignInViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     SignInScreen(
+        uiState = uiState,
+        onEmailChange = viewModel::changeEmail,
+        onPasswordChange = viewModel::changePassword,
+        onPasswordVisibilityChange = viewModel::changePasswordVisibility,
+        onErrorShown = viewModel::errorShown,
+        onSignInClick = viewModel::signIn,
+        onSignInSuccessful = onSignInSuccessful,
         onSignUpClick = onSignUpClick,
-        onSignInClick = onSignInClick,
         onBackClick = onBackClick
     )
 }
@@ -48,12 +59,29 @@ fun SignInRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SignInScreen(
-    onSignUpClick: () -> Unit,
+    uiState: SignInUiState,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onPasswordVisibilityChange: () -> Unit,
+    onErrorShown: () -> Unit,
     onSignInClick: () -> Unit,
+    onSignInSuccessful: () -> Unit,
+    onSignUpClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
+    LaunchedEffect(uiState.signInSuccessful) {
+        if (uiState.signInSuccessful) {
+            onSignInSuccessful()
+        }
+    }
+
+    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    uiState.errorMessage?.let {
+        scope.launch { snackbarHostState.showSnackbar(it) }
+        onErrorShown()
+    }
 
     Scaffold(
         topBar = {
@@ -71,7 +99,6 @@ private fun SignInScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
         ) {
             Spacer(Modifier.height(40.dp))
@@ -87,23 +114,16 @@ private fun SignInScreen(
             )
             Spacer(Modifier.height(40.dp))
             AuthForm(
-                email = "",
-                onEmailChange = {},
-                password = "",
-                onPasswordChange = {},
-                passwordVisible = false,
-                onPasswordVisibilityChange = {}
+                email = uiState.email,
+                password = uiState.password,
+                passwordVisible = uiState.passwordVisible,
+                authButtonEnabled = uiState.signInButtonEnabled,
+                authButtonText = stringResource(id = R.string.sign_in),
+                onEmailChange = onEmailChange,
+                onPasswordChange = onPasswordChange,
+                onPasswordVisibilityChange = onPasswordVisibilityChange,
+                onAuthButtonClick = onSignInClick
             )
-            Spacer(Modifier.height(20.dp))
-            Button(
-                onClick = onSignInClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(bottom = 10.dp)
-            ) {
-                Text(text = stringResource(id = R.string.sign_in))
-            }
         }
     }
 }
@@ -129,8 +149,14 @@ private fun NoAccount(
 private fun SignInScreenPreview() {
     ComponentPreview {
         SignInScreen(
-            onSignUpClick = {},
+            uiState = SignInUiState(),
+            onEmailChange = {},
+            onPasswordChange = {},
+            onPasswordVisibilityChange = {},
+            onErrorShown = {},
             onSignInClick = {},
+            onSignInSuccessful = {},
+            onSignUpClick = {},
             onBackClick = {}
         )
     }

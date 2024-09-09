@@ -1,0 +1,36 @@
+package com.bullsage.android.data.repository.impl
+
+import com.bullsage.android.data.model.Result
+import com.bullsage.android.data.repository.AuthRepository
+import kotlinx.coroutines.delay
+import javax.inject.Inject
+
+class AuthRepositoryImpl @Inject constructor(
+
+) : AuthRepository {
+    override suspend fun signIn(
+        email: String,
+        password: String
+    ): Result<Unit> {
+        return try {
+            // simulate network call
+            delay(1000)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e.message)
+        }
+    }
+
+    override suspend fun signUp(
+        email: String,
+        password: String
+    ): Result<Unit> {
+        return try {
+            // simulate network call
+            delay(1000)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e.message)
+        }
+    }
+}

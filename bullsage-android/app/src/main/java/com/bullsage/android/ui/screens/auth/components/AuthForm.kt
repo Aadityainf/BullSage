@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -27,11 +28,16 @@ import com.bullsage.android.R
 @Composable
 fun AuthForm(
     email: String,
-    onEmailChange: (String) -> Unit,
     password: String,
-    onPasswordChange: (String) -> Unit,
     passwordVisible: Boolean,
-    onPasswordVisibilityChange: () -> Unit
+    authButtonEnabled: Boolean,
+    authButtonText: String,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onPasswordVisibilityChange: () -> Unit,
+    onAuthButtonClick: () -> Unit,
+    emailError: String? = null,
+    passwordError: String? = null
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -43,6 +49,10 @@ fun AuthForm(
                 Text(text = stringResource(id = R.string.email))
             },
             singleLine = true,
+            isError = emailError != null,
+            supportingText = {
+                Text(text = emailError ?: "")
+            },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Email
@@ -57,6 +67,10 @@ fun AuthForm(
                 Text(text = stringResource(id = R.string.password))
             },
             singleLine = true,
+            isError = passwordError != null,
+            supportingText = {
+                Text(text = passwordError ?: "")
+            },
             visualTransformation = if (passwordVisible) {
                 VisualTransformation.None
             } else {
@@ -88,5 +102,18 @@ fun AuthForm(
             ),
             modifier = Modifier.fillMaxWidth()
         )
+        Spacer(Modifier.height(20.dp))
+        Button(
+            onClick = {
+                focusManager.clearFocus()
+                onAuthButtonClick()
+            },
+            enabled = authButtonEnabled,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text(text = authButtonText)
+        }
     }
 }

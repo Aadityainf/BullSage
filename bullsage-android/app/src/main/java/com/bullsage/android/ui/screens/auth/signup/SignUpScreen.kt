@@ -3,12 +3,8 @@ package com.bullsage.android.ui.screens.auth.signup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -17,25 +13,40 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bullsage.android.R
 import com.bullsage.android.ui.components.BackButton
 import com.bullsage.android.ui.components.previews.ComponentPreview
 import com.bullsage.android.ui.components.previews.DayNightPreviews
 import com.bullsage.android.ui.screens.auth.components.AuthForm
+import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpRoute(
     onContinueClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
+    val signUpState by viewModel.uiState.collectAsStateWithLifecycle()
+
     SignUpScreen(
+        uiState = signUpState,
+        onEmailChange = viewModel::changeEmail,
+        onPasswordChange = viewModel::changePassword,
+        onPasswordVisibilityChange = viewModel::changePasswordVisibility,
+        onErrorShown = viewModel::errorShown,
+        onSignUpClick = viewModel::signUp,
         onContinueClick = onContinueClick,
         onBackClick = onBackClick
     )
@@ -44,11 +55,28 @@ fun SignUpRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SignUpScreen(
+    uiState: SignUpUiState,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onPasswordVisibilityChange: () -> Unit,
+    onErrorShown: () -> Unit,
+    onSignUpClick: () -> Unit,
     onContinueClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
+    LaunchedEffect(uiState.signUpSuccessful) {
+        if (uiState.signUpSuccessful) {
+            onContinueClick()
+        }
+    }
+
+    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    uiState.errorMessage?.let {
+        scope.launch { snackbarHostState.showSnackbar(it) }
+        onErrorShown()
+    }
 
     Scaffold(
         topBar = {
@@ -66,7 +94,6 @@ private fun SignUpScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
         ) {
             Spacer(Modifier.height(40.dp))
@@ -78,23 +105,18 @@ private fun SignUpScreen(
             )
             Spacer(Modifier.height(40.dp))
             AuthForm(
-                email = "",
-                onEmailChange = {},
-                password = "",
-                onPasswordChange = {},
-                passwordVisible = false,
-                onPasswordVisibilityChange = {}
+                email = uiState.email,
+                emailError = uiState.emailError,
+                password = uiState.password,
+                passwordError = uiState.passwordError,
+                passwordVisible = uiState.passwordVisible,
+                authButtonEnabled = uiState.signUpButtonEnabled,
+                authButtonText = stringResource(id = R.string.continue_text),
+                onEmailChange = onEmailChange,
+                onPasswordChange = onPasswordChange,
+                onPasswordVisibilityChange = onPasswordVisibilityChange,
+                onAuthButtonClick = onSignUpClick
             )
-            Spacer(Modifier.height(20.dp))
-            Button(
-                onClick = onContinueClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(bottom = 10.dp)
-            ) {
-                Text(text = stringResource(id = R.string.continue_text))
-            }
         }
     }
 }
@@ -104,7 +126,13 @@ private fun SignUpScreen(
 private fun SignUpScreenPreview() {
     ComponentPreview {
         SignUpScreen(
+            uiState = SignUpUiState(),
+            onEmailChange = {},
+            onPasswordChange = {},
+            onPasswordVisibilityChange = {},
+            onErrorShown = {},
             onContinueClick = {},
+            onSignUpClick = {},
             onBackClick = {}
         )
     }

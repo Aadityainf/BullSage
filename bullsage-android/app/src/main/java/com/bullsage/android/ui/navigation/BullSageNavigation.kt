@@ -42,7 +42,7 @@ fun BullSageNavigation(
             ) {
                 SignInRoute(
                     onSignUpClick = navController::navigateToSignUp,
-                    onSignInClick = navController::navigateToHomeOnSignIn,
+                    onSignInSuccessful = navController::navigateToHomeOnSignIn,
                     onBackClick = navController::navigateUp
                 )
             }
