@@ -7,23 +7,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.bullsage.android.ui.screens.auth.signin.SignInRoute
 import com.bullsage.android.ui.screens.auth.signup.SignUpRoute
-import com.bullsage.android.ui.screens.explore.exploreScreen
+import com.bullsage.android.ui.screens.explore.ExploreRoute
 import com.bullsage.android.ui.screens.home.HomeRoute
 import com.bullsage.android.ui.screens.onboarding.OnboardingRoute
-import com.bullsage.android.ui.screens.profile.profileScreen
+import com.bullsage.android.ui.screens.profile.ProfileRoute
 
 @Composable
 fun BullSageNavigation(
     navController: NavHostController,
-    hasOnboarded: Boolean
+    startDestination: String
 ) {
     NavHost(
         navController = navController,
-        startDestination = if (hasOnboarded) {
-            BullSageDestinations.BottomBarDestination.HOME.name
-        } else {
-            BullSageDestinations.Destination.Onboarding.route
-        }
+        startDestination = startDestination
     ) {
         composable(
             route = BullSageDestinations.Destination.Onboarding.route
@@ -42,7 +38,7 @@ fun BullSageNavigation(
             ) {
                 SignInRoute(
                     onSignUpClick = navController::navigateToSignUp,
-                    onSignInSuccessful = navController::navigateToHomeOnSignIn,
+                    onSignInSuccessful = navController::navigateToHome,
                     onBackClick = navController::navigateUp
                 )
             }
@@ -57,12 +53,21 @@ fun BullSageNavigation(
         }
 
         composable(
-            route = BullSageDestinations.BottomBarDestination.HOME.name
+            route = BullSageDestinations.BottomBarDestination.HOME.route
         ) {
             HomeRoute()
         }
 
-        exploreScreen()
-        profileScreen()
+        composable(
+            route = BullSageDestinations.BottomBarDestination.EXPLORE.route
+        ) {
+            ExploreRoute()
+        }
+
+        composable(
+            route = BullSageDestinations.BottomBarDestination.PROFILE.route
+        ) {
+            ProfileRoute()
+        }
     }
 }

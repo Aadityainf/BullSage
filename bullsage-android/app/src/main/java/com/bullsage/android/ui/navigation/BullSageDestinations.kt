@@ -12,19 +12,23 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed interface BullSageDestinations {
     enum class BottomBarDestination(
         val selectedIcon: ImageVector,
-        val icon: ImageVector
+        val icon: ImageVector,
+        val route: String,
     ) : BullSageDestinations {
         HOME(
             selectedIcon = Icons.Rounded.Home,
-            icon = Icons.Outlined.Home
+            icon = Icons.Outlined.Home,
+            route = "home"
         ),
         EXPLORE(
             selectedIcon = Icons.Rounded.Search,
-            icon = Icons.Outlined.Search
+            icon = Icons.Outlined.Search,
+            route = "explore"
         ),
         PROFILE(
             selectedIcon = Icons.Rounded.Person,
-            icon = Icons.Outlined.Person
+            icon = Icons.Outlined.Person,
+            route = "profile"
         )
     }
 

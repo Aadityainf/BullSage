@@ -3,6 +3,8 @@ agp = "8.5.0"
 androidxActivityCompose = "1.9.0"
 androidxComposeBom = "2024.06.00"
 androidxCore = "1.13.1"
+androidxCoreSplashScreen = "1.0.1"
+androidxDatastore = "1.1.1"
 androidxHilt = "1.2.0"
 androidxLifecycle = "2.8.3"
 androidxNavigationCompose = "2.7.7"
@@ -17,6 +19,8 @@ ksp = "2.0.0-1.0.22"
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashScreen" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHilt" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExitJunit" }

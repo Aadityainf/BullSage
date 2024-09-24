@@ -10,7 +10,7 @@ fun NavController.navigateToSignUp() {
     navigate(BullSageDestinations.Destination.Auth.SignUp.route)
 }
 
-fun NavController.navigateToHomeOnSignIn() {
+fun NavController.navigateToHome() {
     navigate(BullSageDestinations.BottomBarDestination.HOME.name) {
         popUpTo(BullSageDestinations.Destination.Onboarding.route) {
             inclusive = true

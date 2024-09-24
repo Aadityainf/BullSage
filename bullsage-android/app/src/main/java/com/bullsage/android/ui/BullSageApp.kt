@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
@@ -23,7 +22,9 @@ import com.bullsage.android.ui.navigation.BullSageDestinations
 import com.bullsage.android.ui.navigation.BullSageNavigation
 
 @Composable
-fun BullSageApp() {
+fun BullSageApp(
+    startDestination: String
+) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
 
@@ -35,7 +36,7 @@ fun BullSageApp() {
     val showBottomBar by remember {
         derivedStateOf {
             bottomBarDestinations.any {
-                backStackEntry?.destination?.route == it.name
+                backStackEntry?.destination?.route == it.route
             }
         }
     }
@@ -58,7 +59,7 @@ fun BullSageApp() {
         ) {
             BullSageNavigation(
                 navController = navController,
-                hasOnboarded = false
+                startDestination = startDestination
             )
         }
     }
@@ -94,14 +95,14 @@ private fun BottomNavigationBar(
 private fun NavDestination?.isMainDestinationInHierarchy(
     destination: BullSageDestinations.BottomBarDestination
 ): Boolean {
-    return this?.hierarchy?.any { it.route == destination.name } == true
+    return this?.hierarchy?.any { it.route == destination.route } == true
 }
 
 private fun NavController.navigateToBottomBarDestination(
     destination: BullSageDestinations.BottomBarDestination
 ) {
     val navOptions = navOptions {
-        popUpTo(graph.findStartDestination().id) {
+        popUpTo(BullSageDestinations.BottomBarDestination.HOME.route) {
             saveState = true
         }
         launchSingleTop = true
@@ -110,15 +111,15 @@ private fun NavController.navigateToBottomBarDestination(
 
     when (destination) {
         BullSageDestinations.BottomBarDestination.HOME -> {
-            navigate(BullSageDestinations.BottomBarDestination.HOME.name, navOptions)
+            navigate(BullSageDestinations.BottomBarDestination.HOME.route, navOptions)
         }
 
         BullSageDestinations.BottomBarDestination.EXPLORE -> {
-            navigate(BullSageDestinations.BottomBarDestination.EXPLORE.name, navOptions)
+            navigate(BullSageDestinations.BottomBarDestination.EXPLORE.route, navOptions)
         }
 
         BullSageDestinations.BottomBarDestination.PROFILE -> {
-            navigate(BullSageDestinations.BottomBarDestination.PROFILE.name, navOptions)
+            navigate(BullSageDestinations.BottomBarDestination.PROFILE.route, navOptions)
         }
     }
 }
