@@ -29,9 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bullsage.android.R
 import com.bullsage.android.ui.components.BackButton
+import com.bullsage.android.ui.components.auth.AuthForm
 import com.bullsage.android.ui.components.previews.ComponentPreview
 import com.bullsage.android.ui.components.previews.DayNightPreviews
-import com.bullsage.android.ui.screens.auth.components.AuthForm
 import kotlinx.coroutines.launch
 
 @Composable

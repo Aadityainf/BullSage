@@ -1,4 +1,4 @@
-package com.bullsage.android.ui.screens.auth.components
+package com.bullsage.android.ui.components.auth
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

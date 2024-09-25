@@ -1,4 +1,4 @@
-package com.bullsage.android.ui.screens.detail.components
+package com.bullsage.android.ui.components.stock
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
