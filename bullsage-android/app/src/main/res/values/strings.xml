@@ -11,4 +11,7 @@
     <string name="sign_in">SIGN IN</string>
     <string name="continue_text">CONTINUE</string>
     <string name="get_started">GET STARTED</string>
+    <string name="market_movers">Market movers</string>
+    <string name="your_watchlist">Your Watchlist</string>
+    <string name="news">News</string>
 </resources>
