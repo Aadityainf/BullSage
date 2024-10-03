@@ -1,5 +1,6 @@
 package com.bullsage.android.ui.components.stock
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -34,7 +35,7 @@ fun StockNewsItem(
                 .fillMaxWidth()
                 .padding(PaddingValues(Padding.contentPadding))
         ) {
-            Card(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
