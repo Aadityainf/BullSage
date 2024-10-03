@@ -26,7 +26,6 @@ import com.bullsage.android.R
 import com.bullsage.android.ui.components.previews.ComponentPreview
 import com.bullsage.android.ui.components.previews.DayNightPreviews
 import com.bullsage.android.ui.components.stock.StockItem
-import com.bullsage.android.ui.components.stock.StockNewsItem
 import com.bullsage.android.ui.components.stock.StockPriceChip
 import com.bullsage.android.util.Padding
 
@@ -59,7 +58,6 @@ private fun HomeScreen(
         ) {
             marketMovers()
             watchlist()
-            news()
         }
     }
 }
@@ -106,24 +104,6 @@ private fun LazyListScope.watchlist() {
         items = (1..4).map { it }
     ) {
         StockItem(1.62)
-    }
-}
-
-private fun LazyListScope.news() {
-    item {
-        Text(
-            text = stringResource(R.string.news),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 12.dp)
-        )
-    }
-    items(
-        items = (1..4).map { it }
-    ) {
-        StockNewsItem()
     }
 }
 
