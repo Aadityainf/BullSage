@@ -18,4 +18,7 @@
     <string name="search_bar_horizontal_padding">Search bar horizontal padding</string>
     <string name="search_bar_vertical_padding">Ssearch bar vertical padding</string>
     <string name="clear_search">Clear search</string>
+    <string name="home">Home</string>
+    <string name="explore">Explore</string>
+    <string name="profile">Profile</string>
 </resources>
