@@ -17,3 +17,11 @@ fun NavController.navigateToHome() {
         }
     }
 }
+
+fun NavController.navigateOnSignOut() {
+    navigate(BullSageDestinations.Destination.Onboarding.route){
+        popUpTo(BullSageDestinations.BottomBarDestination.HOME.route) {
+            inclusive = true
+        }
+    }
+}

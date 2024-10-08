@@ -33,6 +33,16 @@ class AuthRepositoryImpl @Inject constructor(
             // simulate network call
             delay(1000)
 
+            tokenManager.saveToken("hello")
+
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e.message)
+        }
+    }
+
+    override suspend fun signOut(): Result<Unit> {
+        return try {
             tokenManager.deleteToken()
 
             Result.Success(Unit)

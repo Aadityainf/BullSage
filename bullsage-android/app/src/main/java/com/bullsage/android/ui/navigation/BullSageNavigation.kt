@@ -67,7 +67,9 @@ fun BullSageNavigation(
         composable(
             route = BullSageDestinations.BottomBarDestination.PROFILE.route
         ) {
-            ProfileRoute()
+            ProfileRoute(
+                onSignOutSuccessful = navController::navigateOnSignOut
+            )
         }
     }
 }
