@@ -41,12 +41,12 @@ sealed interface BullSageDestinations {
     sealed interface Destination : BullSageDestinations {
         val route: String
 
-        data object Onboarding : Destination {
-            override val route: String = "onboarding"
-        }
-
         data object Auth : Destination {
             override val route: String = "auth"
+
+            data object Onboarding : Destination {
+                override val route: String = "onboarding"
+            }
 
             data object SignIn : Destination {
                 override val route: String = "auth/signin"

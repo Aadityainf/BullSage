@@ -21,18 +21,19 @@ fun BullSageNavigation(
         navController = navController,
         startDestination = startDestination
     ) {
-        composable(
-            route = BullSageDestinations.Destination.Onboarding.route
-        ) {
-            OnboardingRoute(
-                onGetStartedClick = navController::navigateToAuth
-            )
-        }
-
         navigation(
             route = BullSageDestinations.Destination.Auth.route,
-            startDestination = BullSageDestinations.Destination.Auth.SignIn.route
+            startDestination = BullSageDestinations.Destination.Auth.Onboarding.route
         ) {
+            composable(
+                route = BullSageDestinations.Destination.Auth.Onboarding.route
+            ) {
+                OnboardingRoute(
+                    onSignInClick = navController::navigateToSignIn,
+                    onSignUpClick = navController::navigateToSignUp
+                )
+            }
+
             composable(
                 route = BullSageDestinations.Destination.Auth.SignIn.route
             ) {
@@ -46,7 +47,7 @@ fun BullSageNavigation(
                 route = BullSageDestinations.Destination.Auth.SignUp.route
             ) {
                 SignUpRoute(
-                    onContinueClick = {},
+                    onContinueClick = navController::navigateToHome,
                     onBackClick = navController::navigateUp
                 )
             }

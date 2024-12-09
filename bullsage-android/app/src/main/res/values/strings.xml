@@ -8,10 +8,9 @@
     <string name="password">Password</string>
     <string name="hide_password">Hide password</string>
     <string name="show_password">Show password</string>
-    <string name="sign_in">SIGN IN</string>
+    <string name="sign_in">Sign In</string>
     <string name="continue_text">CONTINUE</string>
-    <string name="get_started">GET STARTED</string>
-    <string name="market_movers">Market movers</string>
+    <string name="create_account">Create Account</string>
     <string name="market_movers">Market Movers</string>
     <string name="your_watchlist">Your Watchlist</string>
     <string name="news">News</string>

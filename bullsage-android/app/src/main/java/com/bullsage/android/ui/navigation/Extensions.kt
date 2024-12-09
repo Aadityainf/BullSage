@@ -2,8 +2,8 @@ package com.bullsage.android.ui.navigation
 
 import androidx.navigation.NavController
 
-fun NavController.navigateToAuth() {
-    navigate(BullSageDestinations.Destination.Auth.route)
+fun NavController.navigateToSignIn() {
+    navigate(BullSageDestinations.Destination.Auth.SignIn.route)
 }
 
 fun NavController.navigateToSignUp() {
@@ -12,14 +12,14 @@ fun NavController.navigateToSignUp() {
 
 fun NavController.navigateToHome() {
     navigate(BullSageDestinations.BottomBarDestination.HOME.name) {
-        popUpTo(BullSageDestinations.Destination.Onboarding.route) {
+        popUpTo(BullSageDestinations.Destination.Auth.route) {
             inclusive = true
         }
     }
 }
 
 fun NavController.navigateOnSignOut() {
-    navigate(BullSageDestinations.Destination.Onboarding.route){
+    navigate(BullSageDestinations.Destination.Auth.route){
         popUpTo(BullSageDestinations.BottomBarDestination.HOME.route) {
             inclusive = true
         }

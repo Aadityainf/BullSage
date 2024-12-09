@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                         startDestination = if (authenticated) {
                             BullSageDestinations.BottomBarDestination.HOME.route
                         } else {
-                            BullSageDestinations.Destination.Onboarding.route
+                            BullSageDestinations.Destination.Auth.route
                         }
                     )
                 }
