@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.kotlin.config.JvmTarget
 
 plugins {
@@ -23,6 +24,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("BASE_URL") ?: ""
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 
     buildTypes {
@@ -43,6 +47,7 @@ android {
         jvmTarget = JvmTarget.JVM_17.toString()
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     packaging {
@@ -71,6 +76,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.dagger.hilt.android)
+    ksp(libs.moshi.kotlin.codegen)
+    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.moshi)
 
     ksp(libs.dagger.hilt.android.compiler)
 

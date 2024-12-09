@@ -19,13 +19,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.bullsage.android.data.model.StockResponse
 import com.bullsage.android.ui.components.previews.ComponentPreview
 import com.bullsage.android.ui.components.previews.DayNightPreviews
 import com.bullsage.android.util.Padding
 
 @Composable
 fun StockPriceChip(
-    percentageChange: Double
+    stock: StockResponse
 ) {
     Card(
         border = BorderStroke(
@@ -43,12 +44,12 @@ fun StockPriceChip(
                 .padding(PaddingValues(Padding.contentPadding))
         ) {
             Text(
-                text = "TICKER",
+                text = stock.symbol,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "company name",
+                text = stock.name,
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 maxLines = 1,
@@ -56,18 +57,18 @@ fun StockPriceChip(
             )
             Row(Modifier.fillMaxWidth()) {
                 Text(
-                    text = "${123.45}",
+                    text = "${stock.latestClose}",
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    text = if (percentageChange < 0) {
-                        "${percentageChange}%"
+                    text = if (stock.percentChange < 0) {
+                        "${stock.percentChange}%"
                     } else {
-                        "+${percentageChange}%"
+                        "+${stock.percentChange}%"
                     },
-                    color = if (percentageChange < 0) {
+                    color = if (stock.percentChange < 0) {
                         Color.Red
                     } else {
                         MaterialTheme.colorScheme.primary
@@ -83,6 +84,8 @@ fun StockPriceChip(
 @Composable
 private fun StockPriceChipPreview() {
     ComponentPreview {
-        StockPriceChip(1.62)
+        StockPriceChip(
+            stock = StockResponse("", "HELLO",1.0, 1.0)
+        )
     }
 }
