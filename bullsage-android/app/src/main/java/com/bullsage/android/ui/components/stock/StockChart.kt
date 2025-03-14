@@ -1,8 +1,7 @@
 package com.bullsage.android.ui.components.stock
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -19,51 +18,57 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.time.DayOfWeek
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
-data class StockData(
-    val price: Float,
-    val date: Int
-)
+//data class StockData(
+//    val price: Float,
+//    val date: Int
+//)
+//
+//val now = LocalDateTime.now()
+//fun getStartOfWeek() = now.with(DayOfWeek.MONDAY)
+//
+//val stockPerformance: List<StockData> = listOf(
+//    StockData(
+//        price = 420f,
+//        date = getStartOfWeek().dayOfMonth
+//    ),
+//    StockData(
+//        price = 400f,
+//        date = getStartOfWeek().plusDays(1).dayOfMonth
+//    ),
+//    StockData(
+//        price = 410f,
+//        date = getStartOfWeek().plusDays(2).dayOfMonth
+//    ),
+//    StockData(
+//        price = 450f,
+//        date = getStartOfWeek().plusDays(3).dayOfMonth
+//    ),
+//    StockData(
+//        price = 407f,
+//        date = getStartOfWeek().plusDays(4).dayOfMonth
+//    )
+//)
 
-val now = LocalDateTime.now()
-fun getStartOfWeek() = now.with(DayOfWeek.MONDAY)
+private val inputFormat = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
+private val outputFormat = DateTimeFormatter.ofPattern("EEE", Locale.ENGLISH)
 
-val stockPerformance: List<StockData> = listOf(
-    StockData(
-        price = 420f,
-        date = getStartOfWeek().dayOfMonth
-    ),
-    StockData(
-        price = 400f,
-        date = getStartOfWeek().plusDays(1).dayOfMonth
-    ),
-    StockData(
-        price = 410f,
-        date = getStartOfWeek().plusDays(2).dayOfMonth
-    ),
-    StockData(
-        price = 450f,
-        date = getStartOfWeek().plusDays(3).dayOfMonth
-    ),
-    StockData(
-        price = 407f,
-        date = getStartOfWeek().plusDays(4).dayOfMonth
-    )
-)
-
+@SuppressLint("DefaultLocale")
 @Composable
 fun StockChart(
+    price: List<Float>,
+    date: List<String>,
     modifier: Modifier = Modifier
 ) {
-    val stockData = remember { stockPerformance }
-    val stockDataSize = remember(stockData) { stockData.size }
-    val upperValue = remember(stockData) {
-        stockData.maxOfOrNull { it.price }?.plus(1) ?: 0f
+    val stockDataSize = remember(date) { date.size }
+    val upperValue = remember(date) {
+        price.maxOrNull() ?: 0f
     }
-    val lowerValue = remember(stockData) {
-        stockData.minOfOrNull { it.price } ?: 0f
+    val lowerValue = remember(date) {
+        price.minOrNull() ?: 0f
     }
 
     val textMeasurer = rememberTextMeasurer()
@@ -81,7 +86,7 @@ fun StockChart(
         val priceStep = (upperValue - lowerValue) / numberOfPrices
         (0..numberOfPrices).forEach { i ->
             val measuredText = textMeasurer.measure(
-                text = (lowerValue + i * priceStep).toString(),
+                text = String.format("%.2f", lowerValue + i * priceStep),
                 style = TextStyle(
                     textAlign = TextAlign.Center,
                     fontSize = 12.sp
@@ -90,7 +95,7 @@ fun StockChart(
             drawText(
                 textLayoutResult = measuredText,
                 topLeft = Offset(
-                    x = 50f,
+                    x = 20f,
                     y = graphHeight - (i * graphHeight / numberOfPrices) - (measuredText.size.height / 2) + topSpacing,
                 )
             )
@@ -100,50 +105,46 @@ fun StockChart(
         val xAxisStartPoint = spacing + 50f
         val graphWidth = width - xAxisStartPoint
         val spacePerTime = graphWidth / stockDataSize
-        stockData.indices.forEach { i ->
-            val time = stockData[i].date
+        date.forEach { i ->
+            val timestamp = inputFormat.parse(i)
+            val dayName = outputFormat.format(timestamp)
             val measuredText = textMeasurer.measure(
-                text = time.toString(),
+                text = dayName,
                 style = TextStyle(
                     fontSize = 12.sp,
                     textAlign = TextAlign.Center
                 )
             )
+
+            val day = ZonedDateTime.parse(i, inputFormat).dayOfMonth
             drawText(
                 textLayoutResult = measuredText,
                 topLeft = Offset(
-                    x = xAxisStartPoint + (i * spacePerTime) - (measuredText.size.width / 2),
+                    x = xAxisStartPoint + (day * spacePerTime) - (measuredText.size.width / 2),
                     y = height - 30 - (measuredText.size.height / 2)
                 )
             )
         }
 
         // Draw horizontal line
-        (0..numberOfPrices).forEach { i ->
-            drawLine(
-                color = if (i == 0) {
-                    Color.Black
-                } else {
-                    Color.Gray
-                },
-                start = Offset(
-                    x = xAxisStartPoint,
-                    y = graphHeight - (i * graphHeight / numberOfPrices) + topSpacing
-                ),
-                end = Offset(
-                    x = xAxisStartPoint + width - 2 * spacing,
-                    y = graphHeight - (i * graphHeight / numberOfPrices) + topSpacing
-                )
+        drawLine(
+            color = Color.Black,
+            start = Offset(
+                x = xAxisStartPoint,
+                y = graphHeight + topSpacing
+            ),
+            end = Offset(
+                x = xAxisStartPoint + width - 2 * spacing,
+                y = graphHeight + topSpacing
             )
-        }
+        )
 
         // Graph line
         val strokePath = Path().apply {
-            (0 until stockData.size - 1).forEach { i ->
-                val data = stockData[i]
-                val nextData = stockData.getOrNull(i + 1) ?: stockData.last()
-                val dataRatio = (data.price - lowerValue) / (upperValue - lowerValue)
-                val nextDataRatio = (nextData.price - lowerValue) / (upperValue - lowerValue)
+            (0 until date.size - 1).forEach { i ->
+                val nextData = price.getOrNull(i + 1) ?: price.last()
+                val dataRatio = (price[i] - lowerValue) / (upperValue - lowerValue)
+                val nextDataRatio = (nextData - lowerValue) / (upperValue - lowerValue)
 
                 val x1 = xAxisStartPoint + (i * spacePerTime)
                 val y1 = graphHeight - (dataRatio * graphHeight)
@@ -169,9 +170,9 @@ fun StockChart(
 @Preview(showBackground = true)
 @Composable
 private fun StockChartPreview() {
-    StockChart(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(500.dp)
-    )
+//    StockChart(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(500.dp)
+//    )
 }

@@ -1,6 +1,7 @@
 package com.bullsage.android.ui.components.stock
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,7 +27,8 @@ import com.bullsage.android.util.Padding
 
 @Composable
 fun StockPriceChip(
-    stock: StockResponse
+    stock: StockResponse,
+    onClick: (String) -> Unit
 ) {
     Card(
         border = BorderStroke(
@@ -41,6 +43,7 @@ fun StockPriceChip(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable { onClick(stock.symbol) }
                 .padding(PaddingValues(Padding.contentPadding))
         ) {
             Text(
@@ -85,7 +88,8 @@ fun StockPriceChip(
 private fun StockPriceChipPreview() {
     ComponentPreview {
         StockPriceChip(
-            stock = StockResponse("", "HELLO",1.0, 1.0)
+            stock = StockResponse("", "HELLO",1.0, 1.0),
+            onClick = {}
         )
     }
 }

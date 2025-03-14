@@ -1,7 +1,7 @@
 package com.bullsage.android.ui.screens.profile
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bullsage.android.R
+import com.bullsage.android.util.Padding
 import kotlinx.coroutines.launch
 
 @Composable
@@ -84,8 +85,13 @@ fun ProfileScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(innerPadding)
-        ) { }
+                .padding(horizontal = Padding.horizontalPadding)
+        ) {
+            Text(
+                text = "Email: ${uiState.email}"
+            )
+        }
     }
 }

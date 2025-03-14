@@ -1,6 +1,7 @@
 package com.bullsage.android.ui.components
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -36,6 +37,7 @@ fun SearchAppBar(
     onSearchQueryChange: (String) -> Unit,
     onActiveChange: (Boolean) -> Unit,
     onClearSearch: () -> Unit,
+    onClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val searchBarHorizontalPadding by animateDpAsState(
@@ -100,9 +102,10 @@ fun SearchAppBar(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable { onClick(it) }
                         .padding(10.dp)
                 ) {
-                    Text("Search 1")
+                    Text(it)
                 }
             }
         }
@@ -120,7 +123,8 @@ private fun SearchBarPreview() {
             searchBarActive = false,
             onActiveChange = {},
             onSearchQueryChange = {},
-            onClearSearch = {}
+            onClearSearch = {},
+            onClick = {}
         )
     }
 }

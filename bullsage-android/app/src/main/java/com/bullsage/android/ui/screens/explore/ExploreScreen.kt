@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bullsage.android.R
-import com.bullsage.android.data.model.NewsArticle
+import com.bullsage.android.data.model.NewsItem
 import com.bullsage.android.ui.components.SearchAppBar
 import com.bullsage.android.ui.components.previews.ComponentPreview
 import com.bullsage.android.ui.components.previews.DayNightPreviews
@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ExploreRoute(
+    navigateToDetails: (String) -> Unit,
     viewModel: ExploreViewModel = hiltViewModel()
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -48,6 +49,7 @@ fun ExploreRoute(
         news = news,
         errorMessage = errorMessage,
         onSearchQueryChange = viewModel::onSearchQueryChange,
+        onSearchSuggestionClick = navigateToDetails,
         onClearSearch = viewModel::onClearSearch,
         onErrorShown = viewModel::onErrorShown
     )
@@ -57,9 +59,10 @@ fun ExploreRoute(
 fun ExploreScreen(
     searchQuery: String,
     searchSuggestions: List<String>,
-    news: List<NewsArticle>,
+    news: List<NewsItem>,
     errorMessage: String?,
     onSearchQueryChange: (String) -> Unit,
+    onSearchSuggestionClick: (String) -> Unit,
     onClearSearch: () -> Unit,
     onErrorShown: () -> Unit
 ) {
@@ -89,7 +92,8 @@ fun ExploreScreen(
                 searchBarActive = searchBarActive,
                 onSearchQueryChange = onSearchQueryChange,
                 onActiveChange = { searchBarActive = it },
-                onClearSearch = onClearSearch
+                onClearSearch = onClearSearch,
+                onClick = onSearchSuggestionClick
             )
 
             LazyColumn(
@@ -107,9 +111,13 @@ fun ExploreScreen(
                     )
                 }
                 items(
-                    items = (1..4).map { it }
+                    items = news
                 ) {
-                    StockNewsItem()
+                    StockNewsItem(
+                        title = it.title,
+                        link = it.link,
+                        thumbnail = it.thumbnail.resolutions.first().url
+                    )
                 }
             }
         }
@@ -127,6 +135,7 @@ private fun ExploreScreenPreview() {
             errorMessage = null,
             onSearchQueryChange = {},
             onClearSearch = {},
+            onSearchSuggestionClick = {},
             onErrorShown = {}
         )
     }

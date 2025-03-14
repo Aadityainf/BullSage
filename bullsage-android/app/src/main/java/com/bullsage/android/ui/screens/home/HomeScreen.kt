@@ -34,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bullsage.android.R
 import com.bullsage.android.data.model.StockResponse
+import com.bullsage.android.data.repository.WatchlistItem
 import com.bullsage.android.ui.components.previews.ComponentPreview
 import com.bullsage.android.ui.components.previews.DayNightPreviews
 import com.bullsage.android.ui.components.stock.StockItem
@@ -43,12 +44,16 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeRoute(
+    onClick: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val watchlist by viewModel.watchlistItems.collectAsStateWithLifecycle()
 
     HomeScreen(
         uiState = uiState,
+        watchlist = watchlist,
+        onClick = onClick,
         onErrorShown = viewModel::clearErrorMessage
     )
 }
@@ -57,6 +62,8 @@ fun HomeRoute(
 @Composable
 private fun HomeScreen(
     uiState: HomeUiState,
+    watchlist: List<WatchlistItem>,
+    onClick: (String) -> Unit,
     onErrorShown: () -> Unit
 ) {
     val snackbarState = remember { SnackbarHostState() }
@@ -97,8 +104,14 @@ private fun HomeScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    marketMovers(movements = uiState.recentMovements)
-                    watchlist()
+                    marketMovers(
+                        movements = uiState.recentMovements,
+                        onClick = onClick
+                    )
+                    watchlist(
+                        watchlist = watchlist,
+                        onClick = onClick
+                    )
                 }
             }
         }
@@ -106,7 +119,8 @@ private fun HomeScreen(
 }
 
 private fun LazyListScope.marketMovers(
-    movements: List<StockResponse>
+    movements: List<StockResponse>,
+    onClick: (String) -> Unit
 ) {
     item {
         Column(
@@ -127,14 +141,20 @@ private fun LazyListScope.marketMovers(
                 items(
                     items = movements
                 ) { stock ->
-                    StockPriceChip(stock)
+                    StockPriceChip(
+                        stock = stock,
+                        onClick = onClick
+                    )
                 }
             }
         }
     }
 }
 
-private fun LazyListScope.watchlist() {
+private fun LazyListScope.watchlist(
+    watchlist: List<WatchlistItem>,
+    onClick: (String) -> Unit
+) {
     item {
         Text(
             text = stringResource(R.string.your_watchlist),
@@ -146,9 +166,13 @@ private fun LazyListScope.watchlist() {
         )
     }
     items(
-        items = (1..4).map { it }
+        items = watchlist
     ) {
-        StockItem(1.62)
+        StockItem(
+            name = it.name,
+            symbol = it.symbol,
+            onClick = onClick
+        )
     }
 }
 
@@ -158,6 +182,8 @@ private fun HomeScreenPreview() {
     ComponentPreview {
         HomeScreen(
             uiState = HomeUiState.NotLoading(),
+            watchlist = emptyList(),
+            onClick = {},
             onErrorShown = {}
         )
     }

@@ -2,11 +2,14 @@ package com.bullsage.android.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.bullsage.android.ui.screens.auth.signin.SignInRoute
 import com.bullsage.android.ui.screens.auth.signup.SignUpRoute
+import com.bullsage.android.ui.screens.details.DetailsRoute
 import com.bullsage.android.ui.screens.explore.ExploreRoute
 import com.bullsage.android.ui.screens.home.HomeRoute
 import com.bullsage.android.ui.screens.onboarding.OnboardingRoute
@@ -56,13 +59,24 @@ fun BullSageNavigation(
         composable(
             route = BullSageDestinations.BottomBarDestination.HOME.route
         ) {
-            HomeRoute()
+            HomeRoute(
+                onClick = { navController.navigate("detail/$it") }
+            )
+        }
+
+        composable(
+            route = "detail/{ticker}",
+            arguments = listOf(navArgument("ticker") { type = NavType.StringType })
+        ) {
+            DetailsRoute(onBackClick = navController::navigateUp)
         }
 
         composable(
             route = BullSageDestinations.BottomBarDestination.EXPLORE.route
         ) {
-            ExploreRoute()
+            ExploreRoute(
+                navigateToDetails = { navController.navigate("detail/$it") }
+            )
         }
 
         composable(

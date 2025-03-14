@@ -1,5 +1,6 @@
 package com.bullsage.android.ui.components.stock
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,7 +23,10 @@ import com.bullsage.android.util.Padding
 
 @Composable
 fun StockItem(
-    percentageChange: Double
+    name: String,
+    symbol: String,
+    onClick: (String) -> Unit,
+    percentageChange: Float = 0f
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -34,16 +38,17 @@ fun StockItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable { onClick(symbol) }
                 .padding(PaddingValues(Padding.contentPadding))
         ) {
             Column {
                 Text(
-                    text = "TICKER",
+                    text = symbol,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "company name",
+                    text = name,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
                     maxLines = 1,
@@ -51,26 +56,26 @@ fun StockItem(
                 )
             }
 
-            Column {
-                Text(
-                    text = "${123.45}",
-                    fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    text = if (percentageChange < 0) {
-                        "${percentageChange}%"
-                    } else {
-                        "+${percentageChange}%"
-                    },
-                    color = if (percentageChange < 0) {
-                        Color.Red
-                    } else {
-                        MaterialTheme.colorScheme.primary
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+//            Column {
+//                Text(
+//                    text = "${123.45}",
+//                    fontWeight = FontWeight.SemiBold,
+//                    style = MaterialTheme.typography.bodyMedium,
+//                )
+//                Text(
+//                    text = if (percentageChange < 0) {
+//                        "${percentageChange}%"
+//                    } else {
+//                        "+${percentageChange}%"
+//                    },
+//                    color = if (percentageChange < 0) {
+//                        Color.Red
+//                    } else {
+//                        MaterialTheme.colorScheme.primary
+//                    },
+//                    style = MaterialTheme.typography.bodyMedium,
+//                )
+//            }
         }
     }
 }
@@ -79,6 +84,11 @@ fun StockItem(
 @Composable
 private fun StockItemPreview() {
     ComponentPreview {
-        StockItem(1.62)
+        StockItem(
+            name = "name",
+            symbol = "SYM",
+            onClick = {},
+            percentageChange = 1.62f
+        )
     }
 }

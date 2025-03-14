@@ -10,7 +10,6 @@ sealed interface HomeUiState {
     ) : HomeUiState
 
     data class Success(
-        val recentMovements: List<StockResponse> = emptyList(),
-//        val userWatchlist
+        val recentMovements: List<StockResponse> = emptyList()
     ) : HomeUiState
 }

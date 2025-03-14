@@ -5,19 +5,30 @@ import androidx.lifecycle.viewModelScope
 import com.bullsage.android.data.model.Result
 import com.bullsage.android.data.model.StockResponse
 import com.bullsage.android.data.repository.StockRepository
+import com.bullsage.android.data.repository.WatchlistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val stockRepository: StockRepository
+    private val stockRepository: StockRepository,
+    watchlistRepository: WatchlistRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState = _uiState.asStateFlow()
+
+    val watchlistItems = watchlistRepository.watchlist
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private var recentMovements: List<StockResponse> = emptyList()
 

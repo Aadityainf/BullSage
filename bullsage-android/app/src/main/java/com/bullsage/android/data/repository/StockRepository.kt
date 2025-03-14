@@ -6,5 +6,5 @@ import com.bullsage.android.data.model.StockResponse
 interface StockRepository {
     suspend fun getRecentMovements(): Result<List<StockResponse>>
 
-    suspend fun searchStock()
+    suspend fun searchStock(searchQuery: String): Result<List<String>>
 }

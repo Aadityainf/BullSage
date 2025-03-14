@@ -1,12 +1,11 @@
 package com.bullsage.android.di
 
 import com.bullsage.android.BuildConfig
-import com.bullsage.android.data.network.JetxApi
+import com.bullsage.android.data.network.BullsageApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -18,7 +17,7 @@ import javax.inject.Singleton
 object NetworkModule {
     @Singleton
     @Provides
-    fun provideJetxApi(): JetxApi {
+    fun provideJetxApi(): BullsageApi {
         val logging = HttpLoggingInterceptor()
             .setLevel(HttpLoggingInterceptor.Level.BODY)
         val client = OkHttpClient.Builder()
@@ -36,6 +35,6 @@ object NetworkModule {
             .addConverterFactory(MoshiConverterFactory.create())
             .client(client)
             .build()
-            .create(JetxApi::class.java)
+            .create(BullsageApi::class.java)
     }
 }

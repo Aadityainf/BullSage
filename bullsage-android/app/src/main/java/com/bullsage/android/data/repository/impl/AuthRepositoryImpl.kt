@@ -5,21 +5,23 @@ import com.bullsage.android.data.model.AuthRequest
 import com.bullsage.android.data.model.Result
 import com.bullsage.android.data.model.UserAuthDetails
 import com.bullsage.android.data.model.getErrorMessage
-import com.bullsage.android.data.network.JetxApi
+import com.bullsage.android.data.network.BullsageApi
 import com.bullsage.android.data.repository.AuthRepository
+import com.bullsage.android.data.repository.WatchlistRepository
 import retrofit2.HttpException
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val jetxApi: JetxApi,
-    private val userAuthManager: UserAuthManager
+    private val bullsageApi: BullsageApi,
+    private val userAuthManager: UserAuthManager,
+    private val watchlistRepository: WatchlistRepository
 ) : AuthRepository {
     override suspend fun signIn(
         email: String,
         password: String
     ): Result<Unit> {
         return try {
-            jetxApi.login(
+            bullsageApi.login(
                 authRequest = AuthRequest(
                     email = email,
                     password = password
@@ -44,7 +46,7 @@ class AuthRepositoryImpl @Inject constructor(
         password: String
     ): Result<Unit> {
         return try {
-            jetxApi.signup(
+            bullsageApi.signup(
                 authRequest = AuthRequest(
                     email = email,
                     password = password
@@ -67,6 +69,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun signOut(): Result<Unit> {
         return try {
             userAuthManager.deleteAuthDetails()
+            watchlistRepository.removeAll()
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(e.message)

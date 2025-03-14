@@ -2,12 +2,12 @@ package com.bullsage.android.data.repository.impl
 
 import com.bullsage.android.data.model.Result
 import com.bullsage.android.data.model.StockResponse
-import com.bullsage.android.data.network.JetxApi
+import com.bullsage.android.data.network.BullsageApi
 import com.bullsage.android.data.repository.StockRepository
 import javax.inject.Inject
 
 class StockRepositoryImpl @Inject constructor(
-    private val api: JetxApi
+    private val api: BullsageApi
 ): StockRepository {
     override suspend fun getRecentMovements(): Result<List<StockResponse>> {
         return try {
@@ -18,7 +18,12 @@ class StockRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchStock() {
-        // TODO: implement
+    override suspend fun searchStock(searchQuery: String): Result<List<String>> {
+        return try {
+            val stockSearchResults = api.searchStocks(searchQuery).data
+            Result.Success(stockSearchResults)
+        } catch (e: Exception) {
+            Result.Error()
+        }
     }
 }
