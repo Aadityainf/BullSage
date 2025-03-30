@@ -30,6 +30,12 @@ required_features = [
     "EMA_200", "RSI_14", "SMA_20", "BB_Upper", "BB_Lower", "MACD"
 ]
 
+# Global Tickers List
+tickers = ['RELIANCE.NS', 'TCS.NS', 'INFY.BO', 'HDFCBANK.BO', 'ICICIBANK.BO', 
+           'ADANIPOWER.BO', 'APOLLOHOSP.BO', 'HEROMOTOCO.BO', 'MARUTI.BO', 
+           'BHARTIARTL.NS', 'MRF.NS', 'WIPRO.NS','SBIN.NS', 'ITC.NS', 'KOTAKBANK.NS', 
+           'BAJFINANCE.NS', 'ULTRACEMCO.NS', 'TITAN.NS', 'ASIANPAINT.NS', 'HCLTECH.NS']
+
 def get_latest_stock_data(ticker, seq_length=1):
     stock = yf.Ticker(ticker)
     hist = stock.history(start=start_date, end=end_date)
@@ -96,7 +102,7 @@ def predict():
 
         # Ensure predicted price is within ±800 range of actual price
         if actual_price:
-            lower_bound = max(800, actual_price - 500)  # Ensuring price is at least 1000
+            lower_bound = max(800, actual_price - 500)
             upper_bound = actual_price + 500
             predicted_price = np.clip(predicted_price, lower_bound, upper_bound)
 
@@ -114,6 +120,42 @@ def predict():
     except Exception as e:
         print(f"Error occurred: {e}")
         return jsonify({'error': str(e)})
+
+@app.route('/show_prices', methods=['GET'])
+def show_prices():
+    try:
+        stock_data = []
+
+        for ticker in tickers:
+            try:
+                features = get_latest_stock_data(ticker)
+                prediction = model.predict(features)
+                predicted_price = scaler_y.inverse_transform(prediction)[0][0]
+
+                # Get actual stock price
+                stock = yf.Ticker(ticker)
+                hist = stock.history(period="1d")
+                actual_price = hist["Close"].values[-1] if not hist.empty else None
+
+                # Adjust predicted price within ±800 range
+                if actual_price:
+                    lower_bound = max(800, actual_price - 500)
+                    upper_bound = actual_price + 500
+                    predicted_price = np.clip(predicted_price, lower_bound, upper_bound)
+
+                stock_data.append({
+                    "ticker": ticker,
+                    "actual_price": actual_price,
+                    "predicted_price": round(predicted_price, 2)
+                })
+
+            except Exception as e:
+                stock_data.append({"ticker": ticker, "actual_price": None, "predicted_price": "Error"})
+
+        return jsonify(stock_data)
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True)
