@@ -2,6 +2,7 @@ package com.bullsage.android.ui.screens.details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -111,6 +113,20 @@ fun DetailScreen(
         ) {
             if (stockDetails != null) {
                 LazyColumn(Modifier.fillMaxSize()) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        ) {
+                            Text(text = stockDetails.info.longName)
+                            Text(
+                                text = "${stockDetails.info.currentPrice} ${stockDetails.info.currency}",
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(text = "Predicted price - ${stockDetails.price.predicted}")
+                        }
+                    }
                     item {
                         StockChart(
                             price = stockDetails.price.close,

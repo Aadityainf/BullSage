@@ -2,10 +2,10 @@ package com.bullsage.android.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bullsage.android.data.db.WatchlistDao
 import com.bullsage.android.data.model.Result
 import com.bullsage.android.data.model.StockResponse
 import com.bullsage.android.data.repository.StockRepository
-import com.bullsage.android.data.repository.WatchlistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,12 +18,12 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val stockRepository: StockRepository,
-    watchlistRepository: WatchlistRepository
+    watchlistDao: WatchlistDao
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    val watchlistItems = watchlistRepository.watchlist
+    val watchlistItems = watchlistDao.getWatchlistItems()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

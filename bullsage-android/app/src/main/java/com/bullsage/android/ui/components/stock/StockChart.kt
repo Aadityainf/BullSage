@@ -1,6 +1,7 @@
 package com.bullsage.android.ui.components.stock
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -18,7 +19,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -63,6 +63,7 @@ fun StockChart(
     date: List<String>,
     modifier: Modifier = Modifier
 ) {
+    Log.d("foo", "$date")
     val stockDataSize = remember(date) { date.size }
     val upperValue = remember(date) {
         price.maxOrNull() ?: 0f
@@ -105,8 +106,8 @@ fun StockChart(
         val xAxisStartPoint = spacing + 50f
         val graphWidth = width - xAxisStartPoint
         val spacePerTime = graphWidth / stockDataSize
-        date.forEach { i ->
-            val timestamp = inputFormat.parse(i)
+        date.forEachIndexed { index, date ->
+            val timestamp = inputFormat.parse(date)
             val dayName = outputFormat.format(timestamp)
             val measuredText = textMeasurer.measure(
                 text = dayName,
@@ -116,11 +117,10 @@ fun StockChart(
                 )
             )
 
-            val day = ZonedDateTime.parse(i, inputFormat).dayOfMonth
             drawText(
                 textLayoutResult = measuredText,
                 topLeft = Offset(
-                    x = xAxisStartPoint + (day * spacePerTime) - (measuredText.size.width / 2),
+                    x = xAxisStartPoint + (index * spacePerTime) - (measuredText.size.width / 2),
                     y = height - 30 - (measuredText.size.height / 2)
                 )
             )
@@ -136,6 +136,19 @@ fun StockChart(
             end = Offset(
                 x = xAxisStartPoint + width - 2 * spacing,
                 y = graphHeight + topSpacing
+            )
+        )
+
+        // Draw vertical line
+        drawLine(
+            color = Color.Black,
+            start = Offset(
+                x = xAxisStartPoint,
+                y = graphHeight + topSpacing
+            ),
+            end = Offset(
+                x = xAxisStartPoint,
+                y = topSpacing - 10f
             )
         )
 

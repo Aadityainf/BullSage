@@ -25,6 +25,10 @@ android {
             useSupportLibrary = true
         }
 
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
+
         val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("BASE_URL") ?: ""
         buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
@@ -71,6 +75,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)

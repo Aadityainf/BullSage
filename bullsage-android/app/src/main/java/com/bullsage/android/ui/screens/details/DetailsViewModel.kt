@@ -3,10 +3,11 @@ package com.bullsage.android.ui.screens.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bullsage.android.data.db.WatchlistDao
+import com.bullsage.android.data.db.WatchlistEntity
 import com.bullsage.android.data.model.StockInfoResponse
 import com.bullsage.android.data.model.StockPriceResponse
 import com.bullsage.android.data.network.BullsageApi
-import com.bullsage.android.data.repository.WatchlistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,7 @@ import javax.inject.Inject
 class DetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bullsageApi: BullsageApi,
-    private val watchlistRepository: WatchlistRepository
+    private val watchlistDao: WatchlistDao
 ): ViewModel() {
     val ticker = savedStateHandle.get<String>("ticker")
 
@@ -33,17 +34,23 @@ class DetailsViewModel @Inject constructor(
     }
 
     fun addToWatchlist() {
-        val details = _stockDetails.value!!
-        watchlistRepository.add(name = details.info.longName, symbol = ticker!!)
-        _stockDetails.update {
-            it!!.copy(isSaved = true)
+        viewModelScope.launch {
+            val details = _stockDetails.value!!
+            watchlistDao.insertIntoWatchlist(
+                WatchlistEntity(longName = details.info.longName, ticker = ticker!!)
+            )
+            _stockDetails.update {
+                it!!.copy(isSaved = true)
+            }
         }
     }
 
     fun removeFromWatchlist() {
-        watchlistRepository.delete(symbol = ticker!!)
-        _stockDetails.update {
-            it!!.copy(isSaved = false)
+        viewModelScope.launch {
+            watchlistDao.deleteFromWatchlist(ticker = ticker!!)
+            _stockDetails.update {
+                it!!.copy(isSaved = false)
+            }
         }
     }
 
@@ -62,7 +69,7 @@ class DetailsViewModel @Inject constructor(
                         StockDetails(
                             price = priceResponse.body()!!,
                             info = infoResponse.body()!!,
-                            isSaved = watchlistRepository.isPresent(ticker)
+                            isSaved = watchlistDao.isPresent(ticker)
                         )
                     }
                 } else {

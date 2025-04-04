@@ -10,6 +10,8 @@ import java.time.format.DateTimeFormatter
 data class StockInfoResponse(
     val averageVolume : String,
     val beta: String,
+    val currency: String,
+    val currentPrice: Float,
     val dividendRate: String?,
     val dividendYield: String?,
     val earningsTimestampEnd: Long,

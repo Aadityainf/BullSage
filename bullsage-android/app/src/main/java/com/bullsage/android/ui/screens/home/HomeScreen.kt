@@ -29,12 +29,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bullsage.android.R
+import com.bullsage.android.data.db.WatchlistEntity
 import com.bullsage.android.data.model.StockResponse
-import com.bullsage.android.data.repository.WatchlistItem
 import com.bullsage.android.ui.components.previews.ComponentPreview
 import com.bullsage.android.ui.components.previews.DayNightPreviews
 import com.bullsage.android.ui.components.stock.StockItem
@@ -62,7 +63,7 @@ fun HomeRoute(
 @Composable
 private fun HomeScreen(
     uiState: HomeUiState,
-    watchlist: List<WatchlistItem>,
+    watchlist: List<WatchlistEntity>,
     onClick: (String) -> Unit,
     onErrorShown: () -> Unit
 ) {
@@ -152,7 +153,7 @@ private fun LazyListScope.marketMovers(
 }
 
 private fun LazyListScope.watchlist(
-    watchlist: List<WatchlistItem>,
+    watchlist: List<WatchlistEntity>,
     onClick: (String) -> Unit
 ) {
     item {
@@ -165,14 +166,24 @@ private fun LazyListScope.watchlist(
                 .padding(bottom = 12.dp)
         )
     }
-    items(
-        items = watchlist
-    ) {
-        StockItem(
-            name = it.name,
-            symbol = it.symbol,
-            onClick = onClick
-        )
+    if (watchlist.isEmpty()) {
+        item {
+            Text(
+                text = stringResource(id = R.string.empty_watchlist_text),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    } else {
+        items(
+            items = watchlist
+        ) {
+            StockItem(
+                name = it.longName,
+                symbol = it.ticker,
+                onClick = onClick
+            )
+        }
     }
 }
 
