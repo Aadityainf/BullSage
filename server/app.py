@@ -10,10 +10,13 @@ from io import BytesIO
 import tensorflow as tf
 import numpy as np
 import pickle
+import jwt 
+from functools import wraps
 from flask_mysqldb import MySQL
-from datetime import datetime
-app = Flask(__name__)
+from datetime import datetime,timedelta
 
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your_secret_key'
 
 
 # MySQL configuration
@@ -50,6 +53,29 @@ tickers = ['RELIANCE.NS', 'TCS.NS', 'INFY.BO', 'HDFCBANK.BO', 'ICICIBANK.BO',
            'ADANIPOWER.BO', 'APOLLOHOSP.BO', 'HEROMOTOCO.BO', 'MARUTI.BO', 
            'BHARTIARTL.NS', 'MRF.NS', 'WIPRO.NS','SBIN.NS', 'ITC.NS', 'KOTAKBANK.NS', 
            'BAJFINANCE.NS', 'ULTRACEMCO.NS', 'TITAN.NS', 'ASIANPAINT.NS', 'HCLTECH.NS']
+def generate_token(email):
+    payload = {
+        'email': email,
+        'exp': datetime.utcnow() + timedelta(days=1)
+    }
+    return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({'error': 'Token is missing!'}), 401
+        try:
+            token = token.split(" ")[1]
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            current_email = data['email']
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Token has expired!'}), 401
+        except Exception:
+            return jsonify({'error': 'Invalid token!'}), 401
+        return f(current_email, *args, **kwargs)
+    return decorated
 
 def get_latest_stock_data(ticker, seq_length=1):
     stock = yf.Ticker(ticker)
@@ -95,7 +121,8 @@ def home():
     return "Stock Price Prediction API is Running!"
 
 @app.route('/predict', methods=['POST'])
-def predict():
+@token_required
+def predict(current_email):
     try:
         data = request.get_json()
         print(f"Received data: {data}")
@@ -280,6 +307,53 @@ def search_stock():
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+@app.route('/watchlist', methods=['POST'])
+@token_required
+def add_to_watchlist(current_email):
+    try:
+        data = request.get_json()
+        ticker = data.get('ticker')
+        if not ticker:
+            return jsonify({'error': 'Ticker is required'}), 400
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT IGNORE INTO watchlist (email, ticker) VALUES (%s, %s)', (current_email, ticker))
+        mysql.connection.commit()
+        cursor.close()
+
+        return jsonify({'status': 'success', 'message': f'{ticker} added to watchlist'}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/watchlist', methods=['GET'])
+@token_required
+def get_watchlist(current_email):
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT ticker FROM watchlist WHERE email = %s', (current_email,))
+        results = cursor.fetchall()
+        cursor.close()
+        return jsonify({'status': 'success', 'watchlist': [r[0] for r in results]}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/watchlist', methods=['DELETE'])
+@token_required
+def remove_from_watchlist(current_email):
+    try:
+        data = request.get_json()
+        ticker = data.get('ticker')
+        if not ticker:
+            return jsonify({'error': 'Ticker is required'}), 400
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('DELETE FROM watchlist WHERE email = %s AND ticker = %s', (current_email, ticker))
+        mysql.connection.commit()
+        cursor.close()
+
+        return jsonify({'status': 'success', 'message': f'{ticker} removed from watchlist'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500    
 
 if __name__ == '__main__':
     app.run(debug=True)
