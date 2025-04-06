@@ -1,6 +1,7 @@
 package com.bullsage.android.di
 
 import com.bullsage.android.BuildConfig
+import com.bullsage.android.data.auth.JwtInterceptor
 import com.bullsage.android.data.network.BullsageApi
 import dagger.Module
 import dagger.Provides
@@ -17,18 +18,14 @@ import javax.inject.Singleton
 object NetworkModule {
     @Singleton
     @Provides
-    fun provideJetxApi(): BullsageApi {
+    fun provideJetxApi(
+        jwtInterceptor: JwtInterceptor
+    ): BullsageApi {
         val logging = HttpLoggingInterceptor()
             .setLevel(HttpLoggingInterceptor.Level.BODY)
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
-//            .addInterceptor(Interceptor { chain ->
-//                val newRequest = chain.request().newBuilder()
-//                    .addHeader("Authorization", BuildConfig.ACCESS_TOKEN)
-//                    .build()
-//
-//                chain.proceed(newRequest)
-//            })
+            .addInterceptor(jwtInterceptor)
             .build()
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)

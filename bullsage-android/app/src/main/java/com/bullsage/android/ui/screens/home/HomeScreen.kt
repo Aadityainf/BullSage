@@ -22,6 +22,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,10 +47,18 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeRoute(
     onClick: (String) -> Unit,
+    navigateToAuth: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val watchlist by viewModel.watchlistItems.collectAsStateWithLifecycle()
+    val navigateToAuth by viewModel.navigateToAuth.collectAsStateWithLifecycle()
+
+    LaunchedEffect(navigateToAuth) {
+        if (navigateToAuth) {
+            navigateToAuth()
+        }
+    }
 
     HomeScreen(
         uiState = uiState,

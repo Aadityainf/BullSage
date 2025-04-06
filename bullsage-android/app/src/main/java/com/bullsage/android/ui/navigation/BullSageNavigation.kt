@@ -60,7 +60,8 @@ fun BullSageNavigation(
             route = BullSageDestinations.BottomBarDestination.HOME.route
         ) {
             HomeRoute(
-                onClick = { navController.navigate("detail/$it") }
+                onClick = { navController.navigate("detail/$it") },
+                navigateToAuth = navController::navigateOnSignOut
             )
         }
 

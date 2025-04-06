@@ -1,7 +1,6 @@
 package com.bullsage.android.ui.components.stock
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -63,7 +62,6 @@ fun StockChart(
     date: List<String>,
     modifier: Modifier = Modifier
 ) {
-    Log.d("foo", "$date")
     val stockDataSize = remember(date) { date.size }
     val upperValue = remember(date) {
         price.maxOrNull() ?: 0f

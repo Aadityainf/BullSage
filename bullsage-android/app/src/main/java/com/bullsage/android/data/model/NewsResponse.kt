@@ -11,7 +11,7 @@ data class NewsResponse(
 data class NewsItem(
     val title: String,
     val link: String,
-    val thumbnail: ThumbnailItem
+    val thumbnail: ThumbnailItem?
 )
 
 @JsonClass(generateAdapter = true)

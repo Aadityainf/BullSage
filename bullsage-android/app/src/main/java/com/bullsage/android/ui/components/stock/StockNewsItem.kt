@@ -26,7 +26,7 @@ import com.bullsage.android.util.Padding
 fun StockNewsItem(
     title: String,
     link: String,
-    thumbnail: String
+    thumbnail: String?
 ) {
     val uriHandler = LocalUriHandler.current
     Card(

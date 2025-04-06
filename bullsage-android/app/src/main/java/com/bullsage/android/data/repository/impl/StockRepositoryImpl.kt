@@ -5,7 +5,9 @@ import com.bullsage.android.data.model.StockResponse
 import com.bullsage.android.data.network.BullsageApi
 import com.bullsage.android.data.repository.StockRepository
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class StockRepositoryImpl @Inject constructor(
     private val api: BullsageApi
 ): StockRepository {
@@ -13,7 +15,7 @@ class StockRepositoryImpl @Inject constructor(
         return try {
             val recentMovements = api.getRecentMovements().data
             Result.Success(recentMovements)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.Error()
         }
     }
@@ -22,7 +24,7 @@ class StockRepositoryImpl @Inject constructor(
         return try {
             val stockSearchResults = api.searchStocks(searchQuery).data
             Result.Success(stockSearchResults)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.Error()
         }
     }

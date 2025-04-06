@@ -116,7 +116,7 @@ fun ExploreScreen(
                     StockNewsItem(
                         title = it.title,
                         link = it.link,
-                        thumbnail = it.thumbnail.resolutions.first().url
+                        thumbnail = it.thumbnail?.resolutions?.first()?.url
                     )
                 }
             }

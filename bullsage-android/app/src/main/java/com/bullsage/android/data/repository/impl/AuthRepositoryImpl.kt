@@ -10,7 +10,9 @@ import com.bullsage.android.data.network.BullsageApi
 import com.bullsage.android.data.repository.AuthRepository
 import retrofit2.HttpException
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val bullsageApi: BullsageApi,
     private val userAuthManager: UserAuthManager,
@@ -21,7 +23,7 @@ class AuthRepositoryImpl @Inject constructor(
         password: String
     ): Result<Unit> {
         return try {
-            bullsageApi.login(
+            val response = bullsageApi.login(
                 authRequest = AuthRequest(
                     email = email,
                     password = password
@@ -29,7 +31,7 @@ class AuthRepositoryImpl @Inject constructor(
             )
             userAuthManager.saveAuthDetails(
                 userAuthDetails = UserAuthDetails(
-                    token = "token",
+                    token = response.token,
                     email = email
                 )
             )
@@ -46,7 +48,7 @@ class AuthRepositoryImpl @Inject constructor(
         password: String
     ): Result<Unit> {
         return try {
-            bullsageApi.signup(
+            val response = bullsageApi.signup(
                 authRequest = AuthRequest(
                     email = email,
                     password = password
@@ -54,7 +56,7 @@ class AuthRepositoryImpl @Inject constructor(
             )
             userAuthManager.saveAuthDetails(
                 userAuthDetails = UserAuthDetails(
-                    token = "token",
+                    token = response.token,
                     email = email
                 )
             )
@@ -68,6 +70,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun signOut(): Result<Unit> {
         return try {
+            bullsageApi.logout()
             userAuthManager.deleteAuthDetails()
             watchlistDao.emptyWatchlist()
             Result.Success(Unit)
