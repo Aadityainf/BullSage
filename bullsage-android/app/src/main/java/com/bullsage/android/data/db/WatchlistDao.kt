@@ -2,6 +2,7 @@ package com.bullsage.android.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
@@ -13,7 +14,7 @@ interface WatchlistDao {
     @Query("SELECT EXISTS(SELECT 1 FROM watchlist WHERE ticker = :ticker)")
     suspend fun isPresent(ticker: String): Boolean
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIntoWatchlist(watchlistEntity: WatchlistEntity)
 
     @Query("DELETE FROM watchlist WHERE ticker = :ticker")

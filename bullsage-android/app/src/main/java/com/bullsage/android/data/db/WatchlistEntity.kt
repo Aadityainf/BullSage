@@ -1,10 +1,12 @@
 package com.bullsage.android.data.db
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "watchlist"
+    tableName = "watchlist",
+    indices = [Index(value = ["ticker"], unique = true)]
 )
 data class WatchlistEntity(
     @PrimaryKey(autoGenerate = true)

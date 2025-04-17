@@ -44,6 +44,8 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun signUp() {
+        if (_uiState.value.email.isBlank() || _uiState.value.password.isBlank()) return
+
         viewModelScope.launch {
             _uiState.update {
                 it.copy(

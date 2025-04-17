@@ -43,6 +43,8 @@ class SignInViewModel @Inject constructor(
     }
 
     fun signIn() {
+        if (_uiState.value.email.isBlank() || _uiState.value.password.isBlank()) return
+
         viewModelScope.launch {
             _uiState.update {
                 it.copy(signInButtonEnabled = false)
