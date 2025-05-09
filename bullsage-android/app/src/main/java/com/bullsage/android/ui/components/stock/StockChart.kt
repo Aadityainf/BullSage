@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlin.math.max
 
 //data class StockData(
 //    val price: Float,
@@ -80,6 +81,7 @@ fun StockChart(
         val height = size.height
 
         // Draw prices
+        var maxPriceTextWidth = 0
         val numberOfPrices = 4
         val graphHeight = height - spacing
         val priceStep = (upperValue - lowerValue) / numberOfPrices
@@ -98,10 +100,11 @@ fun StockChart(
                     y = graphHeight - (i * graphHeight / numberOfPrices) - (measuredText.size.height / 2) + topSpacing,
                 )
             )
+            maxPriceTextWidth = max(measuredText.size.width, maxPriceTextWidth)
         }
 
         // Draw time
-        val xAxisStartPoint = spacing + 50f
+        val xAxisStartPoint = spacing + maxPriceTextWidth - 50f
         val graphWidth = width - xAxisStartPoint
         val spacePerTime = graphWidth / stockDataSize
         date.forEachIndexed { index, date ->
@@ -124,19 +127,6 @@ fun StockChart(
             )
         }
 
-        // Draw horizontal line
-        drawLine(
-            color = Color.Black,
-            start = Offset(
-                x = xAxisStartPoint,
-                y = graphHeight + topSpacing
-            ),
-            end = Offset(
-                x = xAxisStartPoint + width - 2 * spacing,
-                y = graphHeight + topSpacing
-            )
-        )
-
         // Draw vertical line
         drawLine(
             color = Color.Black,
@@ -151,6 +141,7 @@ fun StockChart(
         )
 
         // Graph line
+        var lastX = 0f
         val strokePath = Path().apply {
             (0 until date.size - 1).forEach { i ->
                 val nextData = price.getOrNull(i + 1) ?: price.last()
@@ -164,6 +155,7 @@ fun StockChart(
 
                 moveTo(x1, y1 + topSpacing)
                 lineTo(x2, y2 + topSpacing)
+                lastX = x2
             }
         }
         drawPath(
@@ -173,6 +165,19 @@ fun StockChart(
                 width = 2.dp.toPx(),
                 cap = StrokeCap.Round,
                 join = StrokeJoin.Round
+            )
+        )
+
+        // Draw horizontal line
+        drawLine(
+            color = Color.Black,
+            start = Offset(
+                x = xAxisStartPoint,
+                y = graphHeight + topSpacing
+            ),
+            end = Offset(
+                x = xAxisStartPoint + lastX - 100f,
+                y = graphHeight + topSpacing
             )
         )
     }
